@@ -1,0 +1,110 @@
+name: Deploy public awareness to ELWMC
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: elwmc-public-awareness
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      SSH_USER: u617995438
+      SSH_HOST: 153.92.8.124
+      SSH_PORT: '65002'
+      DEPLOY_PATH: /home/u617995438/domains/elwmc.com/public_html
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check deployment credential
+        env:
+          SSHPASS: ${{ secrets.ELWMC_SSH_KEY || secrets.ELWMC_SSH }}
+        run: |
+          if [[ -z "$SSHPASS" ]]; then
+            echo "::error::Set the ELWMC_SSH_KEY or ELWMC_SSH Actions secret to the Hostinger SSH password."
+            exit 1
+          fi
+
+      - name: Configure SSH
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y sshpass rsync
+          mkdir -p -m 700 ~/.ssh
+          echo "[$SSH_HOST]:$SSH_PORT ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHYC8UOhpHYa8Q4noj1DiHr7iD4gQcqcsvuUoY/M7hJt" >> ~/.ssh/known_hosts
+          cat >> ~/.ssh/config <<EOF
+          Host elwmc-deploy
+            HostName $SSH_HOST
+            Port $SSH_PORT
+            User $SSH_USER
+            StrictHostKeyChecking yes
+            PreferredAuthentications password
+            PubkeyAuthentication no
+            NumberOfPasswordPrompts 1
+          EOF
+          chmod 600 ~/.ssh/config
+
+      - name: Publish pages and downloads
+        env:
+          SSHPASS: ${{ secrets.ELWMC_SSH_KEY || secrets.ELWMC_SSH }}
+        run: |
+          SSHPASS="$(printf '%s' "$SSHPASS" | tr -d '\r\n')"
+          export SSHPASS
+
+          # The ELWMC Laravel installation rewrites site URLs into public/.
+          # A plain Hostinger document root serves files directly from public_html.
+          web_root=$(sshpass -e ssh elwmc-deploy bash -s -- "$DEPLOY_PATH" <<'REMOTE'
+          set -eu
+          cd "$1"
+          if [[ -f .htaccess ]] && grep -Eq '^[[:space:]]*RewriteRule[[:space:]]+[^ ]+[[:space:]]+/?public/\$1' .htaccess; then
+            [[ -d public && ! -L public ]]
+            cd public
+          fi
+
+          entry=public-awareness.html
+          target=public-awareness/public-awareness-material.html
+          if [[ -e "$entry" || -L "$entry" ]]; then
+            [[ "$(readlink "$entry")" == "$target" ]] || { echo "Existing $entry collision" >&2; exit 1; }
+          fi
+          owner=Muhammad-Ashfaq1/lwmc-public-awareness
+          if mkdir public-awareness 2>/dev/null; then
+            printf '%s\n' "$owner" > public-awareness/.deploy-owner
+          elif [[ -L public-awareness || ! -f public-awareness/.deploy-owner ]] ||
+               [[ "$(cat public-awareness/.deploy-owner)" != "$owner" ]]; then
+            echo "Existing public-awareness directory belongs to another deployment" >&2
+            exit 1
+          fi
+          pwd
+          REMOTE
+          )
+          case "$web_root" in
+            "$DEPLOY_PATH"|"$DEPLOY_PATH/public") ;;
+            *) echo "Unexpected document root"; exit 1 ;;
+          esac
+
+          # Both the root URL and the copy inside the app directory use the same assets.
+          stage=$(mktemp -d)
+          sed 's|<head>|<head><base href="/public-awareness/">|' public-awareness-material.html > "$stage/public-awareness-material.html"
+          sshpass -e rsync -rtz --delay-updates --chmod=D755,F644 -e ssh \
+            "$stage/public-awareness-material.html" waste-to-value.html images pdfs \
+            "elwmc-deploy:$web_root/public-awareness/"
+
+          sshpass -e ssh elwmc-deploy bash -s -- "$web_root" <<'REMOTE'
+          set -eu
+          cd "$1"
+          target=public-awareness/public-awareness-material.html
+          if [[ "$(readlink public-awareness.html || true)" != "$target" ]]; then
+            ln -sT "$target" public-awareness.html
+          fi
+          REMOTE
+
+          curl --fail --silent --show-error --location --retry 3 \
+            "https://elwmc.com/public-awareness.html?rev=$GITHUB_SHA" -o "$stage/live.html"
+          cmp "$stage/public-awareness-material.html" "$stage/live.html"
