@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waste to Value | LWMC</title>
+<style>
+  :root { --green:#1e7a3c; --green-dark:#145a2b; --green-light:#e8f4ec; --text:#1f2933; --border:#e3e8ee; --bg:#f6f8f7; --pdf:#d32f2f; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Segoe UI",Roboto,Arial,sans-serif; color:var(--text); background:var(--bg); line-height:1.5; }
+  a { color:inherit; text-decoration:none; }
+  img { max-width:100%; display:block; }
+  .container { width:100%; max-width:1240px; margin:0 auto; padding:0 20px; }
+
+  /* Top bar */
+  .topbar { background:var(--green-dark); color:#fff; font-size:13px; }
+  .topbar-inner { display:flex; justify-content:space-between; align-items:center; padding-top:8px; padding-bottom:8px; flex-wrap:wrap; gap:8px; }
+  .topbar-info span { margin-right:22px; }
+  .topbar-social a { margin-left:14px; opacity:.9; }
+  .topbar a:hover { opacity:1; text-decoration:underline; }
+
+  /* Header */
+  .header { background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.06); position:sticky; top:0; z-index:50; }
+  .header-inner { display:flex; align-items:center; justify-content:space-between; padding-top:10px; padding-bottom:10px; }
+  .logo img { height:56px; width:auto; }
+  .nav { display:flex; align-items:center; gap:6px; }
+  .nav a { padding:8px 14px; font-size:15px; font-weight:500; border-radius:6px; transition:.2s; }
+  .nav a:hover, .nav a.active { color:var(--green); background:var(--green-light); }
+  .nav-toggle { display:none; background:none; border:0; font-size:28px; cursor:pointer; color:var(--green-dark); }
+
+  /* Hero */
+  .hero { background:linear-gradient(135deg,var(--green-dark),var(--green)); color:#fff; text-align:center; padding:56px 0 48px; }
+  .eyebrow { display:inline-block; background:rgba(255,255,255,.15); padding:5px 16px; border-radius:30px; font-size:13px; letter-spacing:.5px; text-transform:uppercase; }
+  .tagline { margin-top:18px; font-size:15px; opacity:.85; }
+  .hero h1 { font-size:40px; margin:6px 0 12px; }
+  .sub { max-width:640px; margin:0 auto; opacity:.92; }
+  .count { margin-top:22px; display:inline-block; background:#fff; color:var(--green-dark); padding:6px 20px; border-radius:30px; font-size:14px; }
+  .count strong { font-size:18px; margin-right:4px; }
+
+  /* Grid + cards */
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:24px; padding:44px 0 64px; }
+  .card { background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; transition:transform .25s, box-shadow .25s; }
+  .card:hover { transform:translateY(-5px); box-shadow:0 14px 30px rgba(20,90,43,.15); }
+  .card-img { position:relative; aspect-ratio:4/3; background:linear-gradient(180deg,#fdf3f3,#f3f6f4); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .card-img svg { width:96px; height:auto; transition:transform .3s; filter:drop-shadow(0 6px 10px rgba(211,47,47,.25)); }
+  .card:hover .card-img svg { transform:scale(1.1); }
+  .card-num { position:absolute; top:10px; left:10px; background:var(--green); color:#fff; font-size:12px; font-weight:600; padding:3px 10px; border-radius:20px; }
+  .card-body { padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; flex:1; }
+  .card-body h3 { font-size:15px; font-weight:600; line-height:1.35; }
+  .card-actions { margin-top:auto; display:flex; gap:8px; }
+  .btn { flex:1; text-align:center; padding:8px 10px; font-size:14px; border-radius:6px; border:1px solid var(--green); cursor:pointer; font-family:inherit; transition:.2s; }
+  .btn-view { background:var(--green); color:#fff; }
+  .btn-view:hover { background:var(--green-dark); }
+  .btn-dl { background:#fff; color:var(--green); }
+  .btn-dl:hover { background:var(--green-light); }
+
+  /* Footer */
+  .footer { background:#12301c; color:#cfe0d5; padding-top:44px; font-size:14px; }
+  .footer-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1.4fr; gap:30px; padding-bottom:30px; }
+  .footer-logo { height:64px; width:auto; background:#fff; padding:6px 10px; border-radius:8px; }
+  .footer h4 { color:#fff; margin-bottom:12px; font-size:16px; }
+  .footer ul { list-style:none; }
+  .footer li { margin-bottom:8px; }
+  .footer a:hover { text-decoration:underline; }
+  .copyright { border-top:1px solid rgba(255,255,255,.12); text-align:center; padding:16px 20px; font-size:13px; }
+
+  @media (max-width:900px) {
+    .nav-toggle { display:block; }
+    .nav { display:none; position:absolute; top:100%; left:0; right:0; background:#fff; flex-direction:column; align-items:stretch; padding:10px 20px 16px; box-shadow:0 8px 16px rgba(0,0,0,.1); }
+    .nav.open { display:flex; }
+    .footer-grid { grid-template-columns:1fr 1fr; }
+    .hero h1 { font-size:30px; }
+  }
+  @media (max-width:600px) {
+    .grid { grid-template-columns:repeat(2,1fr); gap:14px; }
+    .card-actions { flex-direction:column; }
+    .card-img svg { width:72px; }
+    .footer-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="container topbar-inner">
+    <div class="topbar-info">
+      <span>Email: <a href="mailto:info@lwmc.com.pk">info@lwmc.com.pk</a></span>
+      <span>Address: 4th Floor Shaheen Complex, Egerton Road Lahore</span>
+    </div>
+    <div class="topbar-social">
+      <a href="https://www.facebook.com/LWMC1139/" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://x.com/SPAL_1139" target="_blank" rel="noopener">X</a>
+      <a href="https://www.linkedin.com/company/lahore-waste-managment-co/posts/?feedView=all" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="container header-inner">
+    <a href="gallery.html" class="logo"><img src="https://lwmc.com.pk/images/logo1.png" alt="LWMC"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">&#9776;</button>
+    <nav class="nav" id="nav">
+      <a href="gallery.html">Public Awareness Handouts</a>
+      <a href="waste-to-value.html" class="active">Waste to Value</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow">LWMC Documents</span>
+    <p class="tagline">Turning Waste into Value</p>
+    <h1>Waste to Value</h1>
+    <p class="sub">Browse and open LWMC documents related to waste to value initiatives.</p>
+    <div class="count"><strong id="countNum">0</strong> Documents</div>
+  </div>
+</section>
+
+<!--
+  HOW TO ADD / EDIT A PDF CARD:
+    1. Put your PDF files in a folder named "pdfs" next to this page.
+    2. Copy one <div class="card"> ... </div> block below.
+    3. Change: the number, the <h3> title, and the file name in BOTH href="pdfs/..." places.
+-->
+<main class="container">
+  <div class="grid" id="grid">
+
+    <div class="card">
+      <div class="card-img" data-pdf="pdfs/LWMC Waste to Value — Expo Overview.pdf">
+        <svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4a4 4 0 0 1 4-4h30l18 18v58a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#fff" stroke="#d32f2f" stroke-width="3"/><path d="M40 0l18 18H44a4 4 0 0 1-4-4z" fill="#f4b6b6"/><rect x="2" y="38" width="60" height="22" rx="4" fill="#d32f2f"/><text x="32" y="54.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">PDF</text></svg>
+        <span class="card-num">01</span>
+      </div>
+      <div class="card-body"><h3>LWMC Waste to Value</h3>
+        <div class="card-actions"><a class="btn btn-view" href="pdfs/LWMC Waste to Value — Expo Overview.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-dl" href="pdfs/Document 1.pdf" download="Document Title 1.pdf">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img" data-pdf="pdfs/From Eid Waste to Energy — LWMC Expo.pdf">
+        <svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4a4 4 0 0 1 4-4h30l18 18v58a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#fff" stroke="#d32f2f" stroke-width="3"/><path d="M40 0l18 18H44a4 4 0 0 1-4-4z" fill="#f4b6b6"/><rect x="2" y="38" width="60" height="22" rx="4" fill="#d32f2f"/><text x="32" y="54.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">PDF</text></svg>
+        <span class="card-num">02</span>
+      </div>
+      <div class="card-body"><h3>From Eid Waste to Energy</h3>
+        <div class="card-actions"><a class="btn btn-view" href="pdfs/From Eid Waste to Energy — LWMC Expo.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-dl" href="pdfs/Document 2.pdf" download="Document Title 2.pdf">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img" data-pdf="pdfs/Inside Lakhodair Landfill — LWMC Expo.pdf">
+        <svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4a4 4 0 0 1 4-4h30l18 18v58a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#fff" stroke="#d32f2f" stroke-width="3"/><path d="M40 0l18 18H44a4 4 0 0 1-4-4z" fill="#f4b6b6"/><rect x="2" y="38" width="60" height="22" rx="4" fill="#d32f2f"/><text x="32" y="54.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">PDF</text></svg>
+        <span class="card-num">03</span>
+      </div>
+      <div class="card-body"><h3>Inside Lakhodair Landfill</h3>
+        <div class="card-actions"><a class="btn btn-view" href="pdfs/Inside Lakhodair Landfill — LWMC Expo.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-dl" href="pdfs/Document 3.pdf" download="Document Title 3.pdf">Download</a></div></div>
+    </div>
+	
+	<div class="card">
+      <div class="card-img" data-pdf="pdfs/Lakhodair Landfill Gas Recovery — LWMC Expo.pdf">
+        <svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4a4 4 0 0 1 4-4h30l18 18v58a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#fff" stroke="#d32f2f" stroke-width="3"/><path d="M40 0l18 18H44a4 4 0 0 1-4-4z" fill="#f4b6b6"/><rect x="2" y="38" width="60" height="22" rx="4" fill="#d32f2f"/><text x="32" y="54.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">PDF</text></svg>
+        <span class="card-num">04</span>
+      </div>
+      <div class="card-body"><h3>Lakhodair Landfill Gas Recovery</h3>
+        <div class="card-actions"><a class="btn btn-view" href="pdfs/Lakhodair Landfill Gas Recovery — LWMC Expo.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-dl" href="pdfs/Document 1.pdf" download="Document Title 1.pdf">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img" data-pdf="pdfs/LWMC Black Soldier Fly Pilot.pdf">
+        <svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4a4 4 0 0 1 4-4h30l18 18v58a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#fff" stroke="#d32f2f" stroke-width="3"/><path d="M40 0l18 18H44a4 4 0 0 1-4-4z" fill="#f4b6b6"/><rect x="2" y="38" width="60" height="22" rx="4" fill="#d32f2f"/><text x="32" y="54.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">PDF</text></svg>
+        <span class="card-num">05</span>
+      </div>
+      <div class="card-body"><h3>LWMC Black Soldier Fly Pilot</h3>
+        <div class="card-actions"><a class="btn btn-view" href="pdfs/LWMC Black Soldier Fly Pilot.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-dl" href="pdfs/Document 2.pdf" download="Document Title 2.pdf">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img" data-pdf="pdfs/LWMC_Mehmood_Booti_Rehabilitation_Expo.pdf">
+        <svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4a4 4 0 0 1 4-4h30l18 18v58a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#fff" stroke="#d32f2f" stroke-width="3"/><path d="M40 0l18 18H44a4 4 0 0 1-4-4z" fill="#f4b6b6"/><rect x="2" y="38" width="60" height="22" rx="4" fill="#d32f2f"/><text x="32" y="54.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">PDF</text></svg>
+        <span class="card-num">06</span>
+      </div>
+      <div class="card-body"><h3>LWMC Mehmood Booti Rehabiliation</h3>
+        <div class="card-actions"><a class="btn btn-view" href="pdfs/LWMC_Mehmood_Booti_Rehabilitation_Expo.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-dl" href="pdfs/Document 3.pdf" download="Document Title 3.pdf">Download</a></div></div>
+    </div>
+	
+	<div class="card">
+      <div class="card-img" data-pdf="pdfs/LWMC_Singhpura_Water_Reclamation_Expo.pdf">
+        <svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4a4 4 0 0 1 4-4h30l18 18v58a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#fff" stroke="#d32f2f" stroke-width="3"/><path d="M40 0l18 18H44a4 4 0 0 1-4-4z" fill="#f4b6b6"/><rect x="2" y="38" width="60" height="22" rx="4" fill="#d32f2f"/><text x="32" y="54.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">PDF</text></svg>
+        <span class="card-num">07</span>
+      </div>
+      <div class="card-body"><h3>LWMC Singhpura Water Reclamation</h3>
+        <div class="card-actions"><a class="btn btn-view" href="pdfs/LWMC_Singhpura_Water_Reclamation_Expo.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-dl" href="pdfs/Document 1.pdf" download="Document Title 1.pdf">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img" data-pdf="pdfs/Mehmood Booti Compost Facility - Windrow Composting.pdf">
+        <svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4a4 4 0 0 1 4-4h30l18 18v58a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#fff" stroke="#d32f2f" stroke-width="3"/><path d="M40 0l18 18H44a4 4 0 0 1-4-4z" fill="#f4b6b6"/><rect x="2" y="38" width="60" height="22" rx="4" fill="#d32f2f"/><text x="32" y="54.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">PDF</text></svg>
+        <span class="card-num">08</span>
+      </div>
+      <div class="card-body"><h3>Mehmood Booti Compost Facility - Windrow Composting</h3>
+        <div class="card-actions"><a class="btn btn-view" href="pdfs/Mehmood Booti Compost Facility - Windrow Composting.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-dl" href="pdfs/Document 2.pdf" download="Document Title 2.pdf">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img" data-pdf="pdfs/Mehmood Booti Compost Facility Upgrade — LWMC Expo.pdf">
+        <svg viewBox="0 0 64 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 4a4 4 0 0 1 4-4h30l18 18v58a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4z" fill="#fff" stroke="#d32f2f" stroke-width="3"/><path d="M40 0l18 18H44a4 4 0 0 1-4-4z" fill="#f4b6b6"/><rect x="2" y="38" width="60" height="22" rx="4" fill="#d32f2f"/><text x="32" y="54.5" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="15" fill="#fff">PDF</text></svg>
+        <span class="card-num">09</span>
+      </div>
+      <div class="card-body"><h3>Mehmood Booti Compost Facility Upgrade</h3>
+        <div class="card-actions"><a class="btn btn-view" href="pdfs/Mehmood Booti Compost Facility Upgrade — LWMC Expo.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-dl" href="pdfs/Document 3.pdf" download="Document Title 3.pdf">Download</a></div></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container footer-grid">
+    <div><img src="https://lwmc.com.pk/images/logo1.png" alt="LWMC" class="footer-logo"></div>
+    <div><h4>Quick Links</h4><ul><li>Site Map</li><li>Privacy Policy</li><li>Terms &amp; Conditions</li><li>Feedback</li></ul></div>
+    <div><h4>Information</h4><ul><li>Webmail</li><li>Login</li><li>Right to Information</li><li>Contact US</li></ul></div>
+    <div><h4>Get In Touch</h4><ul>
+      <li>Add: 4th Floor Shaheen Complex Egerton Road, Lahore</li>
+      <li>Email: <a href="mailto:info@lwmc.com.pk">info@lwmc.com.pk</a></li>
+      <li>Phone: <a href="tel:+924299205153">+92 42 99205153-55</a></li></ul></div>
+  </div>
+  <div class="copyright">Copyright 2026 by MIS Department, Lahore Waste Management Company All Right Reserved.</div>
+</footer>
+
+<script>
+  var cards = document.querySelectorAll('.card');
+  document.getElementById('countNum').textContent = cards.length;
+
+  // Clicking the PDF icon opens the PDF in a new tab
+  document.querySelectorAll('.card-img').forEach(function (box) {
+    box.addEventListener('click', function () {
+      window.open(box.dataset.pdf, '_blank', 'noopener');
+    });
+  });
+
+  // Download button: save the file instead of opening it
+  function forceDownload(url, filename) {
+    fetch(url)
+      .then(function (r) { if (!r.ok) throw new Error('not ok'); return r.blob(); })
+      .then(function (blob) {
+        var file = new Blob([blob], { type: 'application/octet-stream' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(file);
+        a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+      })
+      .catch(function () {
+        var a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+      });
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a.btn-dl');
+    if (!a) return;
+    e.preventDefault();
+    forceDownload(a.getAttribute('href'), a.getAttribute('download') || a.getAttribute('href').split('/').pop());
+  });
+
+  document.getElementById('navToggle').onclick = function () { document.getElementById('nav').classList.toggle('open'); };
+</script>
+</body>
+</html>

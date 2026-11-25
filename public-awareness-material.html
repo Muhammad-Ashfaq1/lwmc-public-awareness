@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LWMC Public Awareness Material</title>
+<style>
+  :root { --green:#1e7a3c; --green-dark:#145a2b; --green-light:#e8f4ec; --text:#1f2933; --border:#e3e8ee; --bg:#f6f8f7; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Segoe UI",Roboto,Arial,sans-serif; color:var(--text); background:var(--bg); line-height:1.5; }
+  a { color:inherit; text-decoration:none; }
+  img { max-width:100%; display:block; }
+  .container { width:100%; max-width:1240px; margin:0 auto; padding:0 20px; }
+
+  /* Top bar */
+  .topbar { background:var(--green-dark); color:#fff; font-size:13px; }
+  .topbar-inner { display:flex; justify-content:space-between; align-items:center; padding-top:8px; padding-bottom:8px; flex-wrap:wrap; gap:8px; }
+  .topbar-info span { margin-right:22px; }
+  .topbar-social a { margin-left:14px; opacity:.9; }
+  .topbar a:hover { opacity:1; text-decoration:underline; }
+
+  /* Header */
+  .header { background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.06); position:sticky; top:0; z-index:50; }
+  .header-inner { display:flex; align-items:center; justify-content:space-between; padding-top:10px; padding-bottom:10px; }
+  .logo img { height:56px; width:auto; }
+  .nav { display:flex; align-items:center; gap:6px; }
+  .nav a { padding:8px 14px; font-size:15px; font-weight:500; border-radius:6px; transition:.2s; }
+  .nav a:hover, .nav a.active { color:var(--green); background:var(--green-light); }
+  .nav-toggle { display:none; background:none; border:0; font-size:28px; cursor:pointer; color:var(--green-dark); }
+
+  /* Hero */
+  .hero { background:linear-gradient(135deg,var(--green-dark),var(--green)); color:#fff; text-align:center; padding:56px 0 48px; }
+  .eyebrow { display:inline-block; background:rgba(255,255,255,.15); padding:5px 16px; border-radius:30px; font-size:13px; letter-spacing:.5px; text-transform:uppercase; }
+  .tagline { margin-top:18px; font-size:15px; opacity:.85; }
+  .hero h1 { font-size:40px; margin:6px 0 12px; }
+  .sub { max-width:640px; margin:0 auto; opacity:.92; }
+  .count { margin-top:22px; display:inline-block; background:#fff; color:var(--green-dark); padding:6px 20px; border-radius:30px; font-size:14px; }
+  .count strong { font-size:18px; margin-right:4px; }
+
+  /* Grid + cards */
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:24px; padding:44px 0 64px; }
+  .card { background:#fff; border:1px solid var(--border); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; transition:transform .25s, box-shadow .25s; }
+  .card:hover { transform:translateY(-5px); box-shadow:0 14px 30px rgba(20,90,43,.15); }
+  .card-img { position:relative; aspect-ratio:3/4; background:#eef1f0; overflow:hidden; cursor:pointer; }
+  .card-img img { width:100%; height:100%; object-fit:cover; transition:transform .4s; }
+  .card:hover .card-img img { transform:scale(1.05); }
+  .card-num { position:absolute; top:10px; left:10px; background:var(--green); color:#fff; font-size:12px; font-weight:600; padding:3px 10px; border-radius:20px; }
+  .card-body { padding:14px 16px 16px; display:flex; flex-direction:column; gap:12px; flex:1; }
+  .card-body h3 { font-size:15px; font-weight:600; line-height:1.35; }
+  .card-actions { margin-top:auto; display:flex; gap:8px; }
+  .btn { flex:1; text-align:center; padding:8px 10px; font-size:14px; border-radius:6px; border:1px solid var(--green); cursor:pointer; font-family:inherit; transition:.2s; }
+  .btn-view { background:var(--green); color:#fff; }
+  .btn-view:hover { background:var(--green-dark); }
+  .btn-dl { background:#fff; color:var(--green); }
+  .btn-dl:hover { background:var(--green-light); }
+
+  /* Footer */
+  .footer { background:#12301c; color:#cfe0d5; padding-top:44px; font-size:14px; }
+  .footer-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1.4fr; gap:30px; padding-bottom:30px; }
+  .footer-logo { height:64px; width:auto; background:#fff; padding:6px 10px; border-radius:8px; }
+  .footer h4 { color:#fff; margin-bottom:12px; font-size:16px; }
+  .footer ul { list-style:none; }
+  .footer li { margin-bottom:8px; }
+  .footer a:hover { text-decoration:underline; }
+  .copyright { border-top:1px solid rgba(255,255,255,.12); text-align:center; padding:16px 20px; font-size:13px; }
+
+  /* Lightbox */
+  .lightbox { position:fixed; inset:0; background:rgba(8,12,10,.94); z-index:1000; display:none; flex-direction:column; align-items:center; justify-content:center; }
+  .lightbox.open { display:flex; }
+  .lb-top { position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:14px 20px; color:#fff; background:linear-gradient(rgba(0,0,0,.6),transparent); z-index:3; }
+  .lb-counter { font-size:15px; opacity:.85; min-width:70px; }
+  .lb-title { flex:1; text-align:center; font-size:16px; font-weight:500; padding:0 12px; }
+  .lb-actions { display:flex; gap:10px; min-width:70px; justify-content:flex-end; }
+  .lb-btn { width:42px; height:42px; border-radius:50%; border:0; background:rgba(255,255,255,.14); color:#fff; font-size:28px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:.2s; }
+  .lb-btn:hover { background:var(--green); }
+  .lb-stage { flex:1; width:100%; display:flex; align-items:center; justify-content:center; padding:70px 80px 110px; min-height:0; }
+  .lb-stage img { max-width:100%; max-height:100%; object-fit:contain; border-radius:6px; box-shadow:0 10px 40px rgba(0,0,0,.5); }
+  .lb-nav { position:absolute; top:50%; transform:translateY(-50%); width:48px; height:48px; border-radius:50%; border:0; background:rgba(255,255,255,.14); color:#fff; font-size:20px; cursor:pointer; z-index:3; transition:.2s; }
+  .lb-nav:hover { background:var(--green); }
+  .lb-prev { left:16px; } .lb-next { right:16px; }
+  .lb-thumbs { position:absolute; bottom:0; left:0; right:0; display:flex; gap:8px; overflow-x:auto; padding:12px 16px; background:linear-gradient(transparent,rgba(0,0,0,.7)); z-index:3; justify-content:safe center; }
+  .lb-thumbs img { height:62px; width:46px; object-fit:cover; border-radius:4px; opacity:.5; cursor:pointer; border:2px solid transparent; flex:none; transition:.2s; }
+  .lb-thumbs img:hover { opacity:.85; }
+  .lb-thumbs img.active { opacity:1; border-color:#fff; }
+
+  @media (max-width:900px) {
+    .nav-toggle { display:block; }
+    .nav { display:none; position:absolute; top:100%; left:0; right:0; background:#fff; flex-direction:column; align-items:stretch; padding:10px 20px 16px; box-shadow:0 8px 16px rgba(0,0,0,.1); }
+    .nav.open { display:flex; }
+    .footer-grid { grid-template-columns:1fr 1fr; }
+    .hero h1 { font-size:30px; }
+  }
+  @media (max-width:600px) {
+    .grid { grid-template-columns:repeat(2,1fr); gap:14px; }
+    .card-actions { flex-direction:column; }
+    .lb-stage { padding:70px 10px 100px; }
+    .lb-nav { width:38px; height:38px; }
+    .lb-prev { left:6px; } .lb-next { right:6px; }
+    .lb-title { display:none; }
+    .footer-grid { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="container topbar-inner">
+    <div class="topbar-info">
+      <span>Email: <a href="mailto:info@lwmc.com.pk">info@lwmc.com.pk</a></span>
+      <span>Address: 4th Floor Shaheen Complex, Egerton Road Lahore</span>
+    </div>
+    <div class="topbar-social">
+      <a href="https://www.facebook.com/LWMC1139/" target="_blank" rel="noopener">Facebook</a>
+      <a href="https://x.com/SPAL_1139" target="_blank" rel="noopener">X</a>
+      <a href="https://www.linkedin.com/company/lahore-waste-managment-co/posts/?feedView=all" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</div>
+
+<!-- Header: logo + 2 menus -->
+<header class="header">
+  <div class="container header-inner">
+    <!-- LOGO: change src to images/logo1.png if you saved the logo locally -->
+    <a href="gallery.html" class="logo"><img src="https://lwmc.com.pk/images/logo1.png" alt="LWMC"></a>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">&#9776;</button>
+    <nav class="nav" id="nav">
+      <a href="gallery.html" class="active">Public Awareness Handouts</a>
+      <a href="#">Waste to Value</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow">LWMC Public Awareness Material</span>
+    <p class="tagline">Cleaner Lahore, Shared Responsibility</p>
+    <h1>Public Awareness Handouts</h1>
+    <p class="sub">Browse and download LWMC awareness material for responsible waste disposal, cleaner public spaces and community well-being.</p>
+    <div class="count"><strong id="countNum">0</strong> Handouts</div>
+  </div>
+</section>
+
+<!--
+  HOW TO EDIT EACH CARD:
+    <img src>      = small preview image (grid + thumbnails)
+    data-full      = full-size image (viewer + download)
+    Download href  = same as data-full
+    alt / <h3>     = title
+-->
+<main class="container">
+  <div class="grid" id="grid">
+
+    <div class="card">
+      <div class="card-img"><img src="images/Anti Littering 1-01.png" data-full="images/Anti Littering 1-01.png" alt="Anti-Littering Awareness — Handout 1"><span class="card-num">01</span></div>
+      <div class="card-body"><h3>Anti-Littering Awareness — Handout 1</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Anti Littering 1-01.png" download="Anti-Littering Awareness - Handout 1.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/Anti Littering 2.png" data-full="images/Anti Littering 2.png" alt="Anti-Littering Awareness — Handout 2"><span class="card-num">02</span></div>
+      <div class="card-body"><h3>Anti-Littering Awareness — Handout 2</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Anti Littering 2.png" download="Anti-Littering Awareness - Handout 2.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/Anti Littering 3.png" data-full="images/Anti Littering 3.png" alt="Anti-Littering Awareness — Handout 3"><span class="card-num">03</span></div>
+      <div class="card-body"><h3>Anti-Littering Awareness — Handout 3</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Anti Littering 3.png" download="Anti-Littering Awareness - Handout 3.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/Eid 2-01.png" data-full="images/Eid 2-01.png" alt="Eid Cleanliness Awareness — Handout 1"><span class="card-num">04</span></div>
+      <div class="card-body"><h3>Eid Cleanliness Awareness — Handout 1</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Eid 2-01.png" download="Eid Cleanliness Awareness - Handout 1.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/Eid 2-02.png" data-full="images/Eid 2-02.png" alt="Eid Cleanliness Awareness — Handout 2"><span class="card-num">05</span></div>
+      <div class="card-body"><h3>Eid Cleanliness Awareness — Handout 2</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Eid 2-02.png" download="Eid Cleanliness Awareness - Handout 2.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/Eid 2-03.png" data-full="images/Eid 2-03.png" alt="Eid Cleanliness Awareness — Handout 3"><span class="card-num">06</span></div>
+      <div class="card-body"><h3>Eid Cleanliness Awareness — Handout 3</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Eid 2-03.png" download="Eid Cleanliness Awareness - Handout 3.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/General Final.png" data-full="images/General Final.png" alt="General Public Awareness Handout"><span class="card-num">07</span></div>
+      <div class="card-body"><h3>General Public Awareness Handout</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/General Final.png" download="General Public Awareness Handout.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/Handout (Commercial Market) final-01.png" data-full="images/Handout (Commercial Market) final-01.png" alt="Commercial Market Cleanliness Handout"><span class="card-num">08</span></div>
+      <div class="card-body"><h3>Commercial Market Cleanliness Handout</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Handout (Commercial Market) final-01.png" download="Commercial Market Cleanliness Handout.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/Handout (spitting)-01.png" data-full="images/Handout (spitting)-01.png" alt="Anti-Spitting Awareness Handout"><span class="card-num">09</span></div>
+      <div class="card-body"><h3>Anti-Spitting Awareness Handout</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Handout (spitting)-01.png" download="Anti-Spitting Awareness Handout.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/Safai Nisf Iman Hand out.png" data-full="images/Safai Nisf Iman Hand out.png" alt="Safai Nisf Iman Handout"><span class="card-num">10</span></div>
+      <div class="card-body"><h3>Safai Nisf Iman Handout</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Safai Nisf Iman Hand out.png" download="Safai Nisf Iman Handout.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/Spitting ai handout final.png" data-full="images/Spitting ai handout final.png" alt="Anti-Spitting Public Awareness Handout"><span class="card-num">11</span></div>
+      <div class="card-body"><h3>Anti-Spitting Public Awareness Handout</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/Spitting ai handout final.png" download="Anti-Spitting Public Awareness Handout.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/general 2-01.png" data-full="images/general 2-01.png" alt="General Cleanliness Awareness — Handout 1"><span class="card-num">12</span></div>
+      <div class="card-body"><h3>General Cleanliness Awareness — Handout 1</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/general 2-01.png" download="General Cleanliness Awareness - Handout 1.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/general 2-02.png" data-full="images/general 2-02.png" alt="General Cleanliness Awareness — Handout 2"><span class="card-num">13</span></div>
+      <div class="card-body"><h3>General Cleanliness Awareness — Handout 2</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/general 2-02.png" download="General Cleanliness Awareness - Handout 2.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/handouts eid-01.png" data-full="images/handouts eid-01.png" alt="Eid Awareness Series — Handout 1"><span class="card-num">14</span></div>
+      <div class="card-body"><h3>Eid Awareness Series — Handout 1</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/handouts eid-01.png" download="Eid Awareness Series - Handout 1.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/handouts eid-02.png" data-full="images/handouts eid-02.png" alt="Eid Awareness Series — Handout 2"><span class="card-num">15</span></div>
+      <div class="card-body"><h3>Eid Awareness Series — Handout 2</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/handouts eid-02.png" download="Eid Awareness Series - Handout 2.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/handouts eid-03.png" data-full="images/handouts eid-03.png" alt="Eid Awareness Series — Handout 3"><span class="card-num">16</span></div>
+      <div class="card-body"><h3>Eid Awareness Series — Handout 3</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/handouts eid-03.png" download="Eid Awareness Series - Handout 3.png">Download</a></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-img"><img src="images/handouts eid-04.png" data-full="images/handouts eid-04.png" alt="Eid Awareness Series — Handout 4"><span class="card-num">17</span></div>
+      <div class="card-body"><h3>Eid Awareness Series — Handout 4</h3>
+        <div class="card-actions"><button class="btn btn-view">View</button><a class="btn btn-dl" href="images/handouts eid-04.png" download="Eid Awareness Series - Handout 4.png">Download</a></div></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container footer-grid">
+    <div><img src="https://lwmc.com.pk/images/logo1.png" alt="LWMC" class="footer-logo"></div>
+    <div><h4>Quick Links</h4><ul><li>Site Map</li><li>Privacy Policy</li><li>Terms &amp; Conditions</li><li>Feedback</li></ul></div>
+    <div><h4>Information</h4><ul><li>Webmail</li><li>Login</li><li>Right to Information</li><li>Contact US</li></ul></div>
+    <div><h4>Get In Touch</h4><ul>
+      <li>Add: 4th Floor Shaheen Complex Egerton Road, Lahore</li>
+      <li>Email: <a href="mailto:info@lwmc.com.pk">info@lwmc.com.pk</a></li>
+      <li>Phone: <a href="tel:+924299205153">+92 42 99205153-55</a></li></ul></div>
+  </div>
+  <div class="copyright">Copyright 2026 by MIS Department, Lahore Waste Management Company All Right Reserved.</div>
+</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox">
+  <div class="lb-top">
+    <div class="lb-counter" id="lbCounter"></div>
+    <div class="lb-title" id="lbTitle"></div>
+    <div class="lb-actions">
+      <a href="#" class="lb-btn" id="lbDownload" title="Download" aria-label="Download">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></svg>
+      </a>
+      <button class="lb-btn" id="lbClose" title="Close" aria-label="Close">&times;</button>
+    </div>
+  </div>
+  <button class="lb-nav lb-prev" id="lbPrev" aria-label="Previous">&#10094;</button>
+  <div class="lb-stage" id="lbStage"><img id="lbImg" alt=""></div>
+  <button class="lb-nav lb-next" id="lbNext" aria-label="Next">&#10095;</button>
+  <div class="lb-thumbs" id="lbThumbs"></div>
+</div>
+
+<script>
+  var imgs = Array.from(document.querySelectorAll('.card-img img'));
+  var lightbox = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lbImg');
+  var lbTitle = document.getElementById('lbTitle');
+  var lbCounter = document.getElementById('lbCounter');
+  var lbDownload = document.getElementById('lbDownload');
+  var lbThumbs = document.getElementById('lbThumbs');
+  var cur = 0;
+
+  document.getElementById('countNum').textContent = imgs.length;
+
+  // thumbnail strip built from the cards above
+  imgs.forEach(function (img, i) {
+    var t = document.createElement('img');
+    t.src = img.src; t.alt = img.alt;
+    t.addEventListener('click', function () { show(i); });
+    lbThumbs.appendChild(t);
+  });
+
+  function show(i) {
+    cur = (i + imgs.length) % imgs.length;
+    var img = imgs[cur];
+    lbImg.src = img.dataset.full;
+    lbImg.alt = img.alt;
+    lbTitle.textContent = img.alt;
+    lbCounter.textContent = (cur + 1) + ' / ' + imgs.length;
+    lbDownload.href = img.dataset.full;          // real file + download attribute = saves the image
+    lbDownload.setAttribute('download', img.alt + '.png');
+    Array.prototype.forEach.call(lbThumbs.children, function (t, idx) {
+      t.classList.toggle('active', idx === cur);
+      if (idx === cur) t.scrollIntoView({ block: 'nearest', inline: 'center' });
+    });
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeBox() { lightbox.classList.remove('open'); document.body.style.overflow = ''; }
+
+  imgs.forEach(function (img, i) {
+    var card = img.closest('.card');
+    card.querySelector('.card-img').addEventListener('click', function () { show(i); });
+    card.querySelector('.btn-view').addEventListener('click', function () { show(i); });
+  });
+
+  document.getElementById('lbClose').onclick = closeBox;
+  document.getElementById('lbPrev').onclick = function () { show(cur - 1); };
+  document.getElementById('lbNext').onclick = function () { show(cur + 1); };
+  document.getElementById('lbStage').addEventListener('click', function (e) { if (e.target.id === 'lbStage') closeBox(); });
+  document.addEventListener('keydown', function (e) {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape') closeBox();
+    if (e.key === 'ArrowLeft') show(cur - 1);
+    if (e.key === 'ArrowRight') show(cur + 1);
+  });
+  var sx = null;
+  lightbox.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; }, { passive: true });
+  lightbox.addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx;
+    if (Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1));
+    sx = null;
+  });
+  document.getElementById('navToggle').onclick = function () { document.getElementById('nav').classList.toggle('open'); };
+  // ---- Force a real download (instead of opening the image in a tab)
+  function forceDownload(url, filename) {
+    fetch(url)
+      .then(function (r) { if (!r.ok) throw new Error('not ok'); return r.blob(); })
+      .then(function (blob) {
+        // generic binary type so the browser never previews the image
+        var file = new Blob([blob], { type: 'application/octet-stream' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(file);
+        a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+      })
+      .catch(function () {
+        // fallback when fetch is blocked (page opened as a local file)
+        var a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+      });
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a.btn-dl, #lbDownload');
+    if (!a) return;
+    e.preventDefault();
+    var url = a.getAttribute('href');
+    if (!url || url === '#') return;
+    var name = a.getAttribute('download') || url.split('/').pop();
+    forceDownload(url, name);
+  });
+</script>
+</body>
+</html>
